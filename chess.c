@@ -27,7 +27,7 @@
 
 typedef uint8_t byte;
 
-byte board[8][8]; /* 2-D Board Array */
+byte board[8][8]; /* 2-D Board Array (y, x) */
 
 byte isodd(byte i) { /* test if int is odd */
     if (i % 2 == 0) {
@@ -39,10 +39,11 @@ byte isodd(byte i) { /* test if int is odd */
 }
 
 void drawboard(void) { /* print array in 8^2 board grid and fill in empty space */
+    printf("\t Y\n\n");
     byte i; /* vertical (y) */
     for (i = 0; i < 8; i++) {
         byte j; /* horizontal (x) */
-        printf("\t");
+        printf("\t %i ", i );
         for (j = 0; j < 8; j++) {
             if (board[i][j] == 0) { /* fill in empty space if board is empty */
                 if (isodd(i) == TRUE) {
@@ -66,10 +67,47 @@ void drawboard(void) { /* print array in 8^2 board grid and fill in empty space 
         }
         printf("\n");
     }
+    printf("\n\t X 01234567\n");
 }
 
+byte getinput(void) { /* get single-byte input */
+    byte inp;
+    scanf("%d", &inp);
+    return inp;
+}
+
+byte isenemy(byte src, byte dst) { /* test if piece is an enemy or not */
+    if (src < 177 && dst < 177 && src > 0 && dst > 0) {
+        if (src <= 82 && dst >= 98) {
+            return TRUE;
+        }
+        else if (dst <= 82 && src >= 98) {
+            return TRUE;
+        }
+        else {
+            return FALSE;
+        }
+    }
+    else {
+        return FALSE;
+    }
+}
+
+byte isoccupied(byte cords) { /* test if cell is occupied */
+    if (cords == 0 || cords < 177) {
+        return FALSE;
+    }
+    else {
+        return TRUE;
+    }
+}
+
+void move (byte src_x, byte src_y, byte dst_x, byte dst_y) { /* move piece */
+    board[dst_y][dst_x] = board[src_y][src_x];
+    board[src_y][src_x] = 0;
+}
 
 int main(void) {
-    board [3][4] = W_QUEEN;
+    printf("%d\n", isenemy(W_PAWN, W_PAWN));
     drawboard();
 }
