@@ -212,10 +212,35 @@ void attemptmove(byte team) { /* test conditions and move if successful */
     move(src_x, src_y, dst_x, dst_y); /* move if move is valid */
 }
 
+void setboard() {
+    byte i;
+    for (i = 0; i < 8; i++) {
+        board[6][i] = W_PAWN;
+        board[1][i] = B_PAWN;
+    }
+    
+    board[7][0] = W_ROOK;
+    board[7][1] = W_KNIGHT;
+    board[7][2] = W_BISHOP;
+    board[7][3] = W_QUEEN;
+    board[7][4] = W_KING;
+    board[7][5] = W_BISHOP;
+    board[7][6] = W_KNIGHT;
+    board[7][7] = W_ROOK;
+    
+    board[0][0] = B_ROOK;
+    board[0][1] = B_KNIGHT;
+    board[0][2] = B_BISHOP;
+    board[0][3] = B_KING;
+    board[0][4] = B_QUEEN;
+    board[0][5] = B_BISHOP;
+    board[0][6] = B_KNIGHT;
+    board[0][7] = B_ROOK;
+}
+
 int main(void) { /* black starts on top, white on bottom */
     byte team = WHITE;
-    board[6][3] = W_PAWN;
-    board[1][4] = B_PAWN;
+    setboard();
     while(1) {         
         drawboard();
         attemptmove(team);
