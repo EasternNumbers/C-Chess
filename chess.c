@@ -314,6 +314,92 @@ void attemptmove(byte team) { /* test conditions and move if successful */
     }
     /* end knight */
     
+    /* start king */
+    if (board[src_y][src_x] == W_KING | board[src_y][src_x] == B_KING) {
+        if (abs(src_x - dst_x) > 1 | abs(src_y - dst_y) > 1) { /* if king moves more than one in any direction */
+            printf("invalid move: out of piece's range of motion\n\n");
+            goto selection;
+        }
+    }
+    /* end king */
+    
+    /* start queen */
+    if (board[src_y][src_x] == W_QUEEN | board[src_y][src_x] == B_QUEEN) {
+        if (abs(src_x - dst_x) == abs(src_y - dst_y)) { /* if move is diagonal */
+            byte x;
+            byte y;
+            if(src_x < dst_x) {
+                byte y = src_y + 1;
+                for (x = src_x + 1; x < dst_x; x++ ) {
+                    if(isoccupied(board[y][x]) == OCCUPIED) {
+                        printf("invalid move: piece in path\n\n");
+                        goto selection;
+                    }
+                    y++;
+                }
+            }
+            else {
+                byte y = src_y - 1;
+                for (x = src_x - 1; x > dst_x; x-- ) {
+                    if(isoccupied(board[y][x]) == OCCUPIED) {
+                        printf("invalid move: piece in path\n\n");
+                        goto selection;
+                    }
+                    y--;
+                }
+            }
+        }
+        else if (abs(src_x - dst_x) != 0) { /* if it moves along x */
+            byte x;
+            byte y = src_y;
+            if(src_x < dst_x) {
+                for (x = src_x + 1; x < dst_x; x++ ) { 
+                    if(isoccupied(board[y][x]) == OCCUPIED) {
+                        printf("invalid move: piece in path\n\n");
+                        goto selection;
+                    }
+                }
+            }
+            else {
+                for (x = src_x - 1; x > dst_x; x-- ) { 
+                    if(isoccupied(board[y][x]) == OCCUPIED) {
+                        printf("invalid move: piece in path\n\n");
+                        goto selection;
+                    }
+                }
+            }
+        }
+        else if (abs(src_y - dst_y) != 0) { /* if it moves along y */
+            byte y;
+            byte x = src_x;
+            if(src_y < dst_y) {
+                for (y = src_y + 1; y < dst_y; y++ ) { 
+                    printf("%d\n", y);
+                    if(isoccupied(board[y][x]) == OCCUPIED) {
+                        printf("invalid move: piece in path\n\n");
+                        goto selection;
+                    }
+                }
+            }
+            else {
+                for (y = src_y - 1; y > dst_y; y++ ) { 
+                    if(isoccupied(board[y][x]) == OCCUPIED) {
+                        printf("invalid move: piece in path\n\n");
+                        goto selection;
+                    }
+                }
+            }
+        }
+        
+        if (abs(src_x - dst_x) != 0 && abs(src_y - dst_y) != 0){ /* if not straight*/
+            if (abs(src_x - dst_x) != abs(src_y - dst_y)) { /* if not diagonal */
+                printf("invalid move: out of piece's range of motion\n\n");
+                goto selection;
+            }
+        }
+    }
+    /* end queen */
+   
     move(src_x, src_y, dst_x, dst_y); /* move if move is valid */
 }
 
@@ -324,7 +410,6 @@ void setboard() {
         board[1][i] = B_PAWN;
     }
     
-    /*
     board[7][0] = W_ROOK;
     board[7][1] = W_KNIGHT;
     board[7][2] = W_BISHOP;
@@ -342,14 +427,37 @@ void setboard() {
     board[0][5] = B_BISHOP;
     board[0][6] = B_KNIGHT;
     board[0][7] = B_ROOK;
-    */
+}
+
+void testvictory() {
+    byte wvictory = TRUE;
+    byte bvictory = TRUE;
+    byte i; /* vertical (y) */
+    for (i = 0; i < 8; i++) {
+        byte j;
+        for (j = 0; j < 8; j++) {
+            if (board[i][j] == W_KING) {
+                bvictory = FALSE;
+            }
+            if (board[i][j] == B_KING) {
+                wvictory = FALSE;
+            }
+        }
+    }
+    
+    if (wvictory == TRUE) {
+        printf("White Victory!\n");
+        exit(0);
+    }
+    if(bvictory == TRUE) {
+        printf("Black Victory!\n");
+        exit(0);
+    }
 }
 
 int main(void) { /* black starts on top, white on bottom */
     byte team = WHITE;
-    //setboard();
-    board[0][0] = W_KNIGHT;
-    board[3][3] = B_KNIGHT;
+    setboard();
     while(1) {         
         drawboard();
         attemptmove(team);
@@ -359,5 +467,6 @@ int main(void) { /* black starts on top, white on bottom */
         else {
             team = WHITE;
         }
+        testvictory();
     }
 }
