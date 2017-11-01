@@ -102,14 +102,14 @@ byte isonteam(byte team, byte cords) { /* test if piece is on current team */
         if (team == WHITE && cords < 98) {
             return ENEMY;
         }
-        else if (team == WHITE && cords > 98) {
+        else if (team == WHITE && cords >= 98) {
             return FRIENDLY;
         }
         
         if (team == BLACK && cords > 82) {
             return ENEMY;
         }
-        else if (team == BLACK && cords < 82)  {
+        else if (team == BLACK && cords <= 82)  {
             return FRIENDLY;
         }
     }
@@ -158,56 +158,150 @@ void attemptmove(byte team) { /* test conditions and move if successful */
         goto selection;        
     }
     
+    if  (src_x > 7 | src_y > 7 | dst_x > 7 |  dst_y > 7 | src_x < 0 | src_y < 0 | dst_x < 0 | dst_y < 0) { /* deny selection if out of range */
+        printf("invalid selection: out of range\n\n");
+        goto selection;
+    }
+    
     /* piece-specific restrictions */
     
-    /* pawn */
+    /* start pawn */
     if (board[src_y][src_x] == W_PAWN | board[src_y][src_x] == B_PAWN) {
         if (board[src_y][src_x] == W_PAWN) { /* if pawn is white */
-            if (src_y - dst_y < 2 && src_x == 6) { /* if pawn is in starting position and moves more than 2 spaces */
+            if (src_y - dst_y > 2 && src_y == 6) { /* if pawn is in starting position and moves more than 2 spaces */
                 printf("invalid move: out of piece's range of motion\n\n");
                 goto selection;
             }
             else {
-                if (src_y - dst_y > 1 | src_y - dst_y < 1) { /* if pawn in not in starting position and moves more than 1 or in the wrong direction */
-                    printf("invalid move: out of piece's range of motion\n\n");
-                    goto selection;
-                }
-                else if (abs(src_x - dst_x) == 1 && isoccupied(board[dst_y][dst_x]) == UNOCCUPIED) { /* if a capture is attempted with an unoccupied square */
-                    printf("invalid move: out of piece's range of motion\n\n");
-                    goto selection;
-                }
-                else if (abs(src_x - dst_x) > 1) { /*if a change in X greater than 2 is attempted */
+                if (src_y - dst_y > 1 && src_y != 6) { /* if pawn is not in starting position and moves more than 1 or in the wrong direction */
                     printf("invalid move: out of piece's range of motion\n\n");
                     goto selection;
                 }
             }
+            
+            if (abs(src_x - dst_x) == 1 && src_y - dst_y > 1) { /* if pawn tries to move 2 and capture from starting position */
+                printf("invalid move: out of piece's range of motion\n\n");
+                goto selection;
+            }
         }
-        else if (board[src_y][src_x] == B_PAWN) { /* if pawn is black */
-            if (dst_y - src_y < 2 && src_x == 1) { /* if pawn is in starting position moves more than 2 spaces */
+       
+       else if (board[src_y][src_x] == B_PAWN) { /* if pawn is black */
+            if (src_y - dst_y < -2 && src_y == 1) { /* if pawn is in starting position moves more than 2 spaces */
                 printf("invalid move: out of piece's range of motion\n\n");
                 goto selection;
             }
             else {
-                if (dst_y - src_y < 1 | src_y - dst_y > 1) { /* if pawn in not in starting position and moves more than 1 or in the wrong direction */
-                    printf("invalid move: out of piece's range of motion\n\n");
-                    goto selection;
-                }
-                else if (abs(src_x - dst_x) == 1 && isoccupied(board[dst_y][dst_x]) == UNOCCUPIED) { /* if a capture is attempted with an unoccupied square */
-                    printf("invalid move: out of piece's range of motion\n\n");
-                    goto selection;
-                }
-                else if (abs(src_x - dst_x) > 1) { /*if a change in X greater than 2 is attempted */
+                if (dst_y - src_y < -1 && src_y != 1) { /* if pawn is not in starting position and moves more than 1 or in the wrong direction */
                     printf("invalid move: out of piece's range of motion\n\n");
                     goto selection;
                 }
             }
+            
+            if (abs(src_x - dst_x) == 1 && src_y - dst_y < -1) { /* if pawn tries to move 2 and capture from starting position */
+                printf("invalid move: out of piece's range of motion\n\n");
+                goto selection;
+            }
         }
+        
         if (isoccupied(board[dst_y][dst_x]) == OCCUPIED && abs(src_x - dst_x) == 0) { /* if position is occupied and is directly ahead */
             printf("invalid move: occupied position\n\n");
             goto selection;
         }
+        
+        if (abs(src_x - dst_x) == 1 && isoccupied(board[dst_y][dst_x]) == UNOCCUPIED) { /* if a capture is attempted with an unoccupied square */
+            printf("invalid move: out of piece's range of motion\n\n");
+            goto selection;
+        } 
+ 
+        if (abs(src_x - dst_x) > 1) { /*if a change in X greater than 2 is attempted */
+            printf("invalid move: out of piece's range of motion\n\n");
+            goto selection;
+        }
     }
     /* end pawn */
+    
+    /* start bishop */
+    if (board[src_y][src_x] == W_BISHOP | board[src_y][src_x] == B_BISHOP) { 
+        if (abs(src_x - dst_x) != abs(src_y - dst_y)) {
+            printf("invalid move: out of piece's range of motion\n\n"); /* if bishop does not move in diagonal */
+            goto selection;
+        }
+        else { /* loop to ensure that no collisions occur along the way */
+            byte x;
+            byte y;
+            if(src_x < dst_x) {
+                byte y = src_y + 1;
+                for (x = src_x + 1; x < dst_x; x++ ) {
+                    if(isoccupied(board[y][x]) == OCCUPIED) {
+                        printf("invalid move: piece in path\n\n");
+                        goto selection;
+                    }
+                    y++;
+                }
+            }
+            else {
+                byte y = src_y - 1;
+                for (x = src_x - 1; x > dst_x; x-- ) {
+                    if(isoccupied(board[y][x]) == OCCUPIED) {
+                        printf("invalid move: piece in path\n\n");
+                        goto selection;
+                    }
+                    y--;
+                }
+            }
+        }
+    }
+    /* end bishop */
+    
+    /* start rook */
+    if (board[src_y][src_x] == W_ROOK | board[src_y][src_x] == B_ROOK) {
+        if(abs(src_x - dst_x) != 0 && abs(src_y - dst_y) != 0) { /* if rook does not move in straight line */
+            printf("invalid move: out of piece's range of motion\n\n");
+            goto selection;
+        }
+        else if (abs(src_x - dst_x) != 0) { /* if it moves along x */
+            byte x;
+            byte y = src_y;
+            if(src_x < dst_x) {
+                for (x = src_x + 1; x < dst_x; x++ ) { 
+                    if(isoccupied(board[y][x]) == OCCUPIED) {
+                        printf("invalid move: piece in path\n\n");
+                        goto selection;
+                    }
+                }
+            }
+            else {
+                for (x = src_x - 1; x > dst_x; x-- ) { 
+                    if(isoccupied(board[y][x]) == OCCUPIED) {
+                        printf("invalid move: piece in path\n\n");
+                        goto selection;
+                    }
+                }
+            }
+        }
+        else if (abs(src_y - dst_y) != 0) { /* if it moves along y */
+            byte y;
+            byte x = src_x;
+            if(src_y < dst_y) {
+                for (y = src_y + 1; y < dst_y; y++ ) { 
+                    printf("%d\n", y);
+                    if(isoccupied(board[y][x]) == OCCUPIED) {
+                        printf("invalid move: piece in path\n\n");
+                        goto selection;
+                    }
+                }
+            }
+            else {
+                for (y = src_y - 1; y > dst_y; y++ ) { 
+                    if(isoccupied(board[y][x]) == OCCUPIED) {
+                        printf("invalid move: piece in path\n\n");
+                        goto selection;
+                    }
+                }
+            }
+        }
+    }
+    /* end rook */
     
     move(src_x, src_y, dst_x, dst_y); /* move if move is valid */
 }
@@ -219,6 +313,7 @@ void setboard() {
         board[1][i] = B_PAWN;
     }
     
+    /*
     board[7][0] = W_ROOK;
     board[7][1] = W_KNIGHT;
     board[7][2] = W_BISHOP;
@@ -236,11 +331,15 @@ void setboard() {
     board[0][5] = B_BISHOP;
     board[0][6] = B_KNIGHT;
     board[0][7] = B_ROOK;
+    */
 }
 
 int main(void) { /* black starts on top, white on bottom */
     byte team = WHITE;
-    setboard();
+    //setboard();
+    board[0][0] = W_BISHOP;
+    board[3][3] = B_ROOK;
+    board[7][7] = W_BISHOP;
     while(1) {         
         drawboard();
         attemptmove(team);
