@@ -284,7 +284,6 @@ void attemptmove(byte team) { /* test conditions and move if successful */
             byte x = src_x;
             if(src_y < dst_y) {
                 for (y = src_y + 1; y < dst_y; y++ ) { 
-                    printf("%d\n", y);
                     if(isoccupied(board[y][x]) == OCCUPIED) {
                         printf("invalid move: piece in path\n\n");
                         goto selection;
@@ -374,7 +373,6 @@ void attemptmove(byte team) { /* test conditions and move if successful */
             byte x = src_x;
             if(src_y < dst_y) {
                 for (y = src_y + 1; y < dst_y; y++ ) { 
-                    printf("%d\n", y);
                     if(isoccupied(board[y][x]) == OCCUPIED) {
                         printf("invalid move: piece in path\n\n");
                         goto selection;
@@ -382,7 +380,7 @@ void attemptmove(byte team) { /* test conditions and move if successful */
                 }
             }
             else {
-                for (y = src_y - 1; y > dst_y; y++ ) { 
+                for (y = src_y - 1; y > dst_y; y-- ) { 
                     if(isoccupied(board[y][x]) == OCCUPIED) {
                         printf("invalid move: piece in path\n\n");
                         goto selection;
