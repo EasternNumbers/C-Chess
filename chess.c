@@ -303,6 +303,17 @@ void attemptmove(byte team) { /* test conditions and move if successful */
     }
     /* end rook */
     
+    /* start knight */
+    if (board[src_y][src_x] == W_KNIGHT | board[src_y][src_x] == B_KNIGHT) {
+        if (abs(src_x - dst_x) == 2 && abs(src_y - dst_y) == 1) {} /* test if move is valid */
+        else if (abs(src_x - dst_x) == 1 && abs(src_y - dst_y) == 2) {}
+        else {
+            printf("invalid move: out of piece's range of motion\n\n");
+            goto selection;
+        }
+    }
+    /* end knight */
+    
     move(src_x, src_y, dst_x, dst_y); /* move if move is valid */
 }
 
@@ -337,9 +348,8 @@ void setboard() {
 int main(void) { /* black starts on top, white on bottom */
     byte team = WHITE;
     //setboard();
-    board[0][0] = W_BISHOP;
-    board[3][3] = B_ROOK;
-    board[7][7] = W_BISHOP;
+    board[0][0] = W_KNIGHT;
+    board[3][3] = B_KNIGHT;
     while(1) {         
         drawboard();
         attemptmove(team);
