@@ -132,15 +132,15 @@ void attemptmove(byte team) { /* test conditions and move if successful */
     }
    
     selection: /* get coordinates */
-    printf("Source X: ");
-    sinbyte src_x = getinput();
     printf("Source Y: ");
     sinbyte src_y = getinput();
+    printf("Source X: ");
+    sinbyte src_x = getinput();
     printf("\n");
-    printf("Destination X: ");
-    sinbyte dst_x = getinput();
     printf("Destination Y: ");
     sinbyte dst_y = getinput();
+    printf("Destination X: ");
+    sinbyte dst_x = getinput();
     printf("\n");
     
     if (isoccupied(board[src_y][src_x]) == UNOCCUPIED) { /* deny selection if an empty cell is selected */
