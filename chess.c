@@ -229,25 +229,46 @@ void attemptmove(byte team) { /* test conditions and move if successful */
         else { /* loop to ensure that no collisions occur along the way */
             byte x;
             byte y;
-            if(src_x < dst_x) {
+            if (src_x < dst_x & src_y < dst_y) { /* increase in x & y */
                 byte y = src_y + 1;
-                for (x = src_x + 1; x < dst_x; x++ ) {
+                for (x = src_x + 1; x < dst_x; x++) {
+                    y++;
                     if(isoccupied(board[y][x]) == OCCUPIED) {
                         printf("invalid move: piece in path\n\n");
                         goto selection;
                     }
-                    y++;
                 }
             }
-            else {
+            else if (src_x > dst_x & src_y > dst_y) { /* decrease in x & y */
                 byte y = src_y - 1;
-                for (x = src_x - 1; x > dst_x; x-- ) {
+                for (x = src_x - 1; x > dst_x; x--) {
+                    y--;
                     if(isoccupied(board[y][x]) == OCCUPIED) {
                         printf("invalid move: piece in path\n\n");
                         goto selection;
                     }
-                    y--;
                 }
+            }
+            else if (src_x < dst_x & src_y > dst_y) { /*increase in x & decrease in y */
+                byte y = src_y - 1;
+                for (x = src_x + 1; x < dst_x; x++) {
+                    y--;
+                    if(isoccupied(board[y][x]) == OCCUPIED) {
+                        printf("invalid move: piece in path\n\n");
+                        goto selection;
+                    }
+                }
+            }
+            else if (src_x > dst_x & src_y < dst_y) { /* decrease in x & increase in y */
+                byte y = src_y + 1;
+                for (x = src_x - 1; x > dst_x; x--) {
+                    y++;
+                    if(isoccupied(board[y][x]) == OCCUPIED) {
+                        printf("invalid move: piece in path\n\n");
+                        goto selection;
+                    }
+                }
+             
             }
         }
     }
@@ -327,25 +348,46 @@ void attemptmove(byte team) { /* test conditions and move if successful */
         if (abs(src_x - dst_x) == abs(src_y - dst_y)) { /* if move is diagonal */
             byte x;
             byte y;
-            if(src_x < dst_x) {
+            if (src_x < dst_x & src_y < dst_y) { /* increase in x & y */
                 byte y = src_y + 1;
                 for (x = src_x + 1; x < dst_x; x++ ) {
+                    y++;
                     if(isoccupied(board[y][x]) == OCCUPIED) {
                         printf("invalid move: piece in path\n\n");
                         goto selection;
                     }
-                    y++;
                 }
             }
-            else {
+            else if (src_x > dst_x & src_y > dst_y) { /* decrease in x & y */
                 byte y = src_y - 1;
                 for (x = src_x - 1; x > dst_x; x-- ) {
+                    y--;
                     if(isoccupied(board[y][x]) == OCCUPIED) {
                         printf("invalid move: piece in path\n\n");
                         goto selection;
                     }
-                    y--;
                 }
+            }
+            else if (src_x < dst_x & src_y > dst_y) { /*increase in x & decrease in y */
+                byte y = src_y - 1;
+                for (x = src_x + 1; x < dst_x; x++) {
+                    y--;
+                    if(isoccupied(board[y][x]) == OCCUPIED) {
+                        printf("invalid move: piece in path\n\n");
+                        goto selection;
+                    }
+                }
+            }
+            else if (src_x > dst_x & src_y < dst_y) { /* decrease in x & increase in y */
+                byte y = src_y + 1;
+                for (x = src_x - 1; x > dst_x; x--) {
+                    y++;
+                    if(isoccupied(board[y][x]) == OCCUPIED) {
+                        printf("invalid move: piece in path\n\n");
+                        goto selection;
+                    }
+                }
+             
             }
         }
         else if (abs(src_x - dst_x) != 0) { /* if it moves along x */
