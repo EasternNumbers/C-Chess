@@ -84,7 +84,18 @@ void drawboard(void) { /* print array in 8^2 board grid and fill in empty space 
 
 byte getinput(void) { /* get single-byte input */
     byte inp;
-    scanf("%d", &inp);
+    byte i = FALSE;
+    while (i == FALSE) {
+        sinbyte j;
+        j = scanf("%d", &inp);
+        if (j > 0) {
+            i = TRUE;
+        }
+        else {
+            while(getchar() != '\n');  
+            printf("enter valid input: ");
+        }
+    }
     return inp;
 }
 
